@@ -332,6 +332,11 @@ def make_issue_note(ai):
     html += '   <div class="inline-error-report-message">%s</div>' % ai.message.text
     if ai.notes:
         html += '   <div class="inline-error-report-notes">%s</div>' % ai.notes.text
+
+    if hasattr(ai.issue, 'backtraces'):
+        for backtrace in ai.issue.backtraces:
+            html += ('<p>Possibly related backtrace: <a href="%s">%s</a> %s</p>'
+                     % (backtrace.url, backtrace.bthash, backtrace.find_match(ai)))
     html += '   <div class="inline-error-report-generator">(emitted by %s)</div>' % ai.generator.name
     if ai.trace:
         html += '<p>TODO: a detailed trace is available in the data model (not yet rendered in this report)</p>'
@@ -361,6 +366,11 @@ def write_common_meta(f):
 COMMON_CSS = '''
 .has_issues {
 background-color: red;
+}
+
+.has_backtrace {
+    color: #0f0;
+    font-weight: bold;
 }
 
 .inline-error-report {
@@ -422,6 +432,8 @@ def write_issue_table_for_file(f, file_, ais):
     f.write('      <th>Issue</th>\n')
     f.write('    </tr>\n')
     for ai in sorted(ais, AnalysisIssue.cmp):
+        has_backtrace = hasattr(ai.issue, 'backtraces') and ai.issue.backtraces
+
         f.write('    <tr>\n')
         f.write('      <td>%s:%i:%i</td>\n'
                 % (ai.givenpath,
@@ -430,10 +442,11 @@ def write_issue_table_for_file(f, file_, ais):
         f.write('      <td>%s</td>\n' % ai.generator.name)
         f.write('      <td>%s</td>\n' % (ai.testid if ai.testid else ''))
         f.write('      <td>%s</td>\n' % (ai.function.name if ai.function else '')),
-        f.write('      <td><a href="%s">%s</a></td>\n'
+        f.write('      <td><a href="%s">%s</a>%s</td>\n'
                 % ('#file-%s-line-%i' % (file_.hash_.hexdigest, ai.line if ai.line else 0),
-                   html_escape(ai.message.text)))
+                   html_escape(ai.message.text), '<b>*</b>' if has_backtrace else ''))
         f.write('    </tr>\n')
+
     f.write('    </table>\n')
 
 def write_failure_table_for_file(f, file_, afs):
