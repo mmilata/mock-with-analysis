@@ -96,18 +96,18 @@ def setup_chroot(mockcfg, srpmpath):
         mockcfg.cmd(['--install', 'cppcheck'])
         mockcfg.cmd(['--install', 'clang-analyzer'])
 
-        # Install the pre-built gcc-python-plugin (from the firehose branch):
-        mockcfg.cmd(['--install',
-                      '/home/david/rpmbuild/RPMS/x86_64/gcc-python2-plugin-0.11.firehose-1.fc17.x86_64.rpm'])
-
-        # Copy up latest version of the libcpychecker code from a working copy
-        # overriding the copy from the pre-built plugin:
-        if 0:
-            HACKED_PATH='/usr/lib/gcc/x86_64-redhat-linux/4.7.2/plugin/python2'
-            # FIXME: ^^ this will need changing
-            for module in glob.glob('../../libcpychecker/*.py'):
-                mockcfg.cmd(['--copyin', module, os.path.join(HACKED_PATH, 'libcpychecker')])
-                mockcfg.cmd(['--copyin', '../../gccutils.py', HACKED_PATH])
+#        # Install the pre-built gcc-python-plugin (from the firehose branch):
+#        mockcfg.cmd(['--install',
+#                      '/home/david/rpmbuild/RPMS/x86_64/gcc-python2-plugin-0.11.firehose-1.fc17.x86_64.rpm'])
+#
+#        # Copy up latest version of the libcpychecker code from a working copy
+#        # overriding the copy from the pre-built plugin:
+#        if 0:
+#            HACKED_PATH='/usr/lib/gcc/x86_64-redhat-linux/4.7.2/plugin/python2'
+#            # FIXME: ^^ this will need changing
+#            for module in glob.glob('../../libcpychecker/*.py'):
+#                mockcfg.cmd(['--copyin', module, os.path.join(HACKED_PATH, 'libcpychecker')])
+#                mockcfg.cmd(['--copyin', '../../gccutils.py', HACKED_PATH])
 
         # Stuff needed by fakegcc.py or firehose:
         mockcfg.cmd(['--install', 'python-subprocess32'])
@@ -136,7 +136,7 @@ def setup_chroot(mockcfg, srpmpath):
                  'fakegcc.py', '/usr/lib/python2.7/site-packages/fakegcc.py'])
     for script in ['invoke-cppcheck',
                    'invoke-clang-analyzer',
-                   'invoke-cpychecker',
+                   #'invoke-cpychecker',
                    ]:
         mockcfg.cmd(['--copyin', script, '/usr/bin/%s' % script])
 
@@ -176,7 +176,7 @@ def extract_results_from_chroot(mockcfg, srpm, buildarch):
             self.versions = {}
             for (generator_name, rpmname) in [('clang-analyzer', 'clang-analyzer'),
                                               ('cppcheck', 'cppcheck'),
-                                              ('cpychecker', 'gcc-python2-plugin'),
+                                              #('cpychecker', 'gcc-python2-plugin'),
                                               ('gcc', 'gcc')]:
                 # FIXME: there really ought to be just one of each:
                 self.versions[generator_name] = ', '.join(mockcfg.get_nvras(rpmname))

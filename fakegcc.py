@@ -151,7 +151,7 @@ def invoke_side_effects(argv):
         if sourcefile.endswith('.c'): # FIXME: other extensions?
             for script, genname in [('invoke-cppcheck', 'cppcheck'),
                                     ('invoke-clang-analyzer', 'clang-analyzer'),
-                                    ('invoke-cpychecker', 'cpychecker'),
+                                    #('invoke-cpychecker', 'cpychecker'),
 
                                     # Uncomment the following to test a
                                     # checker that fails to write any XML:
